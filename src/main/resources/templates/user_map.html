@@ -1,0 +1,14 @@
+<body>
+<table>
+    <tr><td>No.</td><td>KEY</td><td>UID</td><td>姓名</td><td>年龄</td><td>偶数</td><td>奇数</td></tr>
+    <tr th:each="memberEntry,memberStat:${allUsers}">
+        <td th:text="${memberStat.index + 1}"/>
+        <td th:text="${memberEntry.key}"/>
+        <td th:text="${memberEntry.value.uid}"/>
+        <td th:text="${memberEntry.value.name}"/>
+        <td th:text="${memberEntry.value.age}"/>
+        <td th:text="${memberStat.even}"/>
+        <td th:text="${memberStat.odd}"/>
+    </tr>
+</table>
+</body>
