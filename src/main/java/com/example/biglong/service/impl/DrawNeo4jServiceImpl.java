@@ -82,7 +82,7 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
 
                     singerLock.lock();
                     try {
-                        int repeatedSingerCount = singerRepository.countBySingerId(songId);
+                        int repeatedSingerCount = singerRepository.countBySingerId(singerId);
                         if (repeatedSingerCount == 0) {
                             singerRepository.save(singerDomain);
                         }
