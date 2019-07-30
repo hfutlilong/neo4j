@@ -1,11 +1,13 @@
 package com.example.biglong;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 @SpringBootApplication
 @EnableNeo4jRepositories
+@MapperScan("com.example.biglong.dao.mapper")
 public class Neo4jApplication {
 
     public static void main(String[] args) {
