@@ -50,7 +50,9 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
         }
         logger.info("queryAllSongs success, song num:{}.", allSongs.size());
 
-        for (SongPO songPO : allSongs) {
+        int allSongSize = allSongs.size();
+        for (int i = 0; i < allSongSize; i++) {
+            SongPO songPO = allSongs.get(i);
             // 保存歌曲信息
             Long songId = songPO.getResourceId();
             SongDomain songDomain = new SongDomain();
@@ -74,11 +76,11 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
             if (StringUtils.isNotBlank(artistIds) && StringUtils.isNotBlank(artistNames)) {
                 String[] artistIdsArr = artistIds.split(",");
                 String[] artistNamesArr = artistNames.split(",");
-                for (int i = 0; i < artistIdsArr.length; i++) {
-                    Long singerId = Long.valueOf(artistIdsArr[i]);
+                for (int j = 0; j < artistIdsArr.length; j++) {
+                    Long singerId = Long.valueOf(artistIdsArr[j]);
                     SingerDomain singerDomain = new SingerDomain();
                     singerDomain.setSingerId(singerId);
-                    singerDomain.setSingerName(artistNamesArr[i]);
+                    singerDomain.setSingerName(artistNamesArr[j]);
 
                     singerLock.lock();
                     try {
@@ -102,6 +104,12 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
                     }
                 }
             }
+
+            if (i % 100 == 0) {
+                logger.info("进度:{}/{}", i, allSongSize);
+            }
         }
+
+        logger.info("######### draw success!");
     }
 }
