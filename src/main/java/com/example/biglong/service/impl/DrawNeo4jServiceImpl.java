@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class DrawNeo4jServiceImpl implements DrawNeo4jService {
@@ -33,6 +35,10 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
     @Autowired
     private SingingRelRepository singingRelRepository;
 
+    private Lock songLock = new ReentrantLock();
+    private Lock singerLock = new ReentrantLock();
+    private Lock relLock = new ReentrantLock();
+
     @Override
     public void drawNeo4j() {
         List<SongPO> allSongs = songMapper.queryAllSongs();
@@ -49,9 +55,15 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
             songDomain.setSongId(songId);
             songDomain.setTitle(songPO.getTitle());
             songDomain.setSubTitle(songPO.getSubTitle());
-            int repeatedSongCount = songRepository.countBySongId(songId);
-            if (repeatedSongCount == 0) {
-                songRepository.save(songDomain);
+
+            songLock.lock();
+            try {
+                int repeatedSongCount = songRepository.countBySongId(songId);
+                if (repeatedSongCount == 0) {
+                    songRepository.save(songDomain);
+                }
+            } finally {
+                songLock.unlock();
             }
 
             // 保存歌手信息
@@ -65,14 +77,26 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
                     SingerDomain singerDomain = new SingerDomain();
                     singerDomain.setSingerId(singerId);
                     singerDomain.setSingerName(artistNamesArr[i]);
-                    int repeatedSingerCount = singerRepository.countBySingerId(songId);
-                    if (repeatedSingerCount == 0) {
-                        singerRepository.save(singerDomain);
+
+                    singerLock.lock();
+                    try {
+                        int repeatedSingerCount = singerRepository.countBySingerId(songId);
+                        if (repeatedSingerCount == 0) {
+                            singerRepository.save(singerDomain);
+                        }
+                    } finally {
+                        singerLock.unlock();
                     }
+
                     // 保存关系
-                    int repeatedRelCount = singingRelRepository.countRel(singerId, songId);
-                    if (repeatedRelCount == 0) {
-                        singingRelRepository.createSingingRel(singerId, songId);
+                    relLock.lock();
+                    try {
+                        int repeatedRelCount = singingRelRepository.countRel(singerId, songId);
+                        if (repeatedRelCount == 0) {
+                            singingRelRepository.createSingingRel(singerId, songId);
+                        }
+                    } finally {
+                        relLock.unlock();
                     }
                 }
             }
