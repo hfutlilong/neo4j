@@ -49,7 +49,10 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
             songDomain.setSongId(songId);
             songDomain.setTitle(songPO.getTitle());
             songDomain.setSubTitle(songPO.getSubTitle());
-            songRepository.save(songDomain);
+            int repeatedSongCount = songRepository.countBySongId(songId);
+            if (repeatedSongCount == 0) {
+                songRepository.save(songDomain);
+            }
 
             // 保存歌手信息
             String artistIds = songPO.getArtistId();
@@ -62,9 +65,15 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
                     SingerDomain singerDomain = new SingerDomain();
                     singerDomain.setSingerId(singerId);
                     singerDomain.setSingerName(artistNamesArr[i]);
-                    singerRepository.save(singerDomain);
+                    int repeatedSingerCount = singerRepository.countBySingerId(songId);
+                    if (repeatedSingerCount == 0) {
+                        singerRepository.save(singerDomain);
+                    }
                     // 保存关系
-                    singingRelRepository.createSingingRel(singerId, songId);
+                    int repeatedRelCount = singingRelRepository.countRel(singerId, songId);
+                    if (repeatedRelCount == 0) {
+                        singingRelRepository.createSingingRel(singerId, songId);
+                    }
                 }
             }
         }

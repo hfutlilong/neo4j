@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface SingingRelRepository extends Neo4jRepository<SingingRelRepository, Long> {
     @Query("MATCH (a:`歌手`),(b:`歌曲`) WHERE a.歌手id = {singerId} AND b.歌曲id = {songId} CREATE (a)-[r:演唱]->(b) RETURN r")
     void createSingingRel(Long singerId, Long songId);
+
+    @Query("MATCH (singer:`歌手`{`歌手id`:{singerId}})-[演唱]->(song:`歌曲`{`歌曲id`:{songId}}) RETURN count(*)")
+    int countRel(Long singerId, Long songId);
 }
