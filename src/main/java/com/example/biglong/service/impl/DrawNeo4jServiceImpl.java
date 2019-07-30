@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
     private Lock relLock = new ReentrantLock();
 
     @Override
+    @Async
     public void drawNeo4j() {
         List<SongPO> allSongs = songMapper.queryAllSongs();
         if (CollectionUtils.isEmpty(allSongs)) {
