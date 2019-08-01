@@ -112,4 +112,9 @@ public class DrawNeo4jServiceImpl implements DrawNeo4jService {
 
         logger.info("######### draw success!");
     }
+
+    @Override
+    public void drawCommentGraph(Integer count) {
+
+    }
 }
